@@ -12,6 +12,8 @@ app.get('/', function (req, res) {
   res.send('Subscription api working ...');
 });
 app.get('/users', users.getUsers);
+app.put('/user/:username', users.addUser);
+app.get('/user/:username', users.getUser);
 
 const PORT = process.env.PORT || 8080;
 
