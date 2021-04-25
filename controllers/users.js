@@ -20,7 +20,7 @@ const getUsers = (req, res) => {
 const addUser = (req, res) => {
   const username = req.params.username;
   pool.query(
-    'INSERT INTO users(username,created_at) VALUES ($1, NOW()) RETURNING *',
+    'INSERT INTO users(user_name,created_at) VALUES ($1, NOW()) RETURNING *',
     [username],
     (error, results) => {
       if (error) {
@@ -49,7 +49,7 @@ const addUser = (req, res) => {
 const getUser = (req,res)=>{
   const username = req.params.username;
   pool.query(
-    `SELECT * FROM users WHERE username='${username}'`,
+    `SELECT * FROM users WHERE user_name='${username}'`,
     (error, results) => {
       if (error) {
         res.status(503).json({
@@ -64,8 +64,7 @@ const getUser = (req,res)=>{
           username: addedData.username,
           created_at: addedData.created_at
             .toISOString()
-            .replace(/T/, ' ')
-            .replace(/\..+/, ''),
+            .replace(/T/, ' '),
         },
       });
     }
