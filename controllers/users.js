@@ -16,7 +16,7 @@ const getUsers = (req, res) => {
   });
 };
 
-//Add user 
+//Add user
 const addUser = (req, res) => {
   const username = req.params.username;
   pool.query(
@@ -24,29 +24,35 @@ const addUser = (req, res) => {
     [username],
     (error, results) => {
       if (error) {
-        res.status(503).json({
-          error: 'Database connectivity issue',
+        if (error.code == '23505') {
+          res.status(400).json({
+            error: 'User already exists',
+          });
+        } else {
+          res.status(503).json({
+            error: 'Database connectivity issue',
+          });
+          throw error;
+        }
+      } else {
+        const addedData = results.rows[0];
+        res.status(200).json({
+          status: 'SUCCESS',
+          data: {
+            username: addedData.username,
+            created_at: addedData.created_at
+              .toISOString()
+              .replace(/T/, ' ')
+              .replace(/\..+/, ''),
+          },
         });
-        throw error;
       }
-      const addedData = results.rows[0];
-      console.log(addedData);
-      res.status(200).json({
-        status: 'SUCCESS',
-        data: {
-          username: addedData.username,
-          created_at: addedData.created_at
-            .toISOString()
-            .replace(/T/, ' ')
-            .replace(/\..+/, ''),
-        },
-      });
     }
   );
 };
 
 //Get single user
-const getUser = (req,res)=>{
+const getUser = (req, res) => {
   const username = req.params.username;
   pool.query(
     `SELECT * FROM users WHERE user_name='${username}'`,
@@ -62,14 +68,11 @@ const getUser = (req,res)=>{
         status: 'SUCCESS',
         data: {
           username: addedData.username,
-          created_at: addedData.created_at
-            .toISOString()
-            .replace(/T/, ' '),
+          created_at: addedData.created_at.toISOString().replace(/T/, ' '),
         },
       });
     }
   );
-}
-
+};
 
 module.exports = { getUsers, addUser, getUser };

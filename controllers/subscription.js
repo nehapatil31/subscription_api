@@ -3,12 +3,8 @@ const pool = require('../database');
 
 const addSubscription = (req, res) => {
   const { user_name: username, plan_id, start_date } = req.body;
-  console.log(
-    `INSERT INTO subscriptions(user_name,plan_id,start_date) VALUES ('${username}','${plan_id}',TO_TIMESTAMP('${start_date}','YYYY-MM-DD'))`
-  );
   pool.query(
-    `INSERT INTO subscriptions(user_name,plan_id,start_date) 
-    VALUES ('${username}','${plan_id}',TO_TIMESTAMP('${start_date}','YYYY-MM-DD'))`,
+    `SELECT * FROM add_subscription('${username}','${plan_id}', '${start_date}')`,
     (error, results) => {
       if (error) {
         res.status(503).json({
@@ -18,7 +14,7 @@ const addSubscription = (req, res) => {
       }
       res.status(200).json({
         status: 'SUCCESS',
-        data: results.rows,
+        data: results.rows[0].add_subscription,
       });
     }
   );
