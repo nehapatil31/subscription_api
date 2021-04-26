@@ -1,5 +1,7 @@
 const pool = require('../database');
 
+const DuplicateKeyCode='23505';
+
 // Get all users
 const getUsers = (req, res) => {
   pool.query('SELECT * FROM users', (error, results) => {
@@ -24,7 +26,7 @@ const addUser = (req, res) => {
     [username],
     (error, results) => {
       if (error) {
-        if (error.code == '23505') {
+        if (error.code == DuplicateKeyCode) {
           res.status(400).json({
             error: 'User already exists',
           });
